@@ -1,5 +1,5 @@
 // 离线缓存：更新网页后把版本号 +1 再上传，手机上关掉 App 重新打开两次即可更新
-const CACHE = 'coins-v17';
+const CACHE = 'coins-v18';
 const ASSETS = ['./', './index.html', './manifest.webmanifest', './icons/icon-192.png', './icons/icon-512.png', './icons/apple-touch-icon.png'];
 const FONT_HOSTS = ['fonts.googleapis.com', 'fonts.gstatic.com'];
 

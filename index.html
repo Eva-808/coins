@@ -237,7 +237,7 @@
       <circle cx="8.5" cy="13.3" r="1.1" fill="#ff8a8a" opacity=".55"/><circle cx="15.5" cy="13.3" r="1.1" fill="#ff8a8a" opacity=".55"/>
       <path d="M10.3 13.5q1.7 1.5 3.4 0" fill="none" stroke="#5b3a12" stroke-width=".9" stroke-linecap="round"/>
     </svg>
-    <span id="stdTime">09:30</span>
+    <span id="stdTime">10:00</span>
   </button>
 </main>
 
@@ -372,7 +372,7 @@
   const newId = () => (Date.now().toString(36) + Math.random().toString(36).slice(2, 7)).slice(0, 24);
 
   const DEFAULTS = () => ({
-    settings: { payMode: 'month', pay: 10000, notify: false, clockIn: '09:00', clockOut: '18:00', days: [1, 2, 3, 4, 5],
+    settings: { ver: 2, payMode: 'month', pay: 10000, notify: false, clockIn: '10:00', clockOut: '18:00', days: [1, 2, 3, 4, 5],
       numOnly: false, symbol: true, font: 'oswald', theme: 0, flip: false, image: '' },
     session: { running: false, startAt: 0, accMs: 0, firstStart: 0, endAt: 0, autoDay: '' },
     stats: { hours: 0, earned: 0 },
@@ -392,6 +392,9 @@
     o.notify = s.notify === true;
     o.clockIn = TIME_RE.test(s.clockIn) ? s.clockIn : o.clockIn;
     o.clockOut = TIME_RE.test(s.clockOut) ? s.clockOut : o.clockOut;
+    // 一次性迁移（v2）：标准上班时间从 09:30 改为 10:00；之后在设置里改成什么就是什么
+    if (!(Number(s.ver) >= 2) && o.clockIn === '09:30') o.clockIn = '10:00';
+    o.ver = 2;
     if (Array.isArray(s.days)) o.days = [...new Set(s.days.map(Number).filter(n => Number.isInteger(n) && n >= 0 && n <= 6))];
     o.numOnly = s.numOnly === true;
     o.symbol = s.symbol !== false;
@@ -427,6 +430,8 @@
   let state = load();
   const S = () => state.settings;
   function save() { try { localStorage.setItem(STORE, JSON.stringify(state)); } catch (e) { toast('保存失败：浏览器存储不可用'); } }
+  // 读取时做过的迁移（比如上班时间 09:30 → 10:00）立刻写回，只迁移一次
+  try { if (localStorage.getItem(STORE)) save(); } catch (e) { /* 忽略 */ }
 
   // ================= 工具 =================
   const pad = n => String(n).padStart(2, '0');
